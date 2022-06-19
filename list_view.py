@@ -1,4 +1,4 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove, CallbackQuery
 from sqlalchemy.orm import Session, declarative_base
 
 Base = declarative_base()
@@ -68,4 +68,47 @@ class ListView:
                     callback_data=f'{self.model.__name__}_edit_{name}_{item.id}'
                 )
             )
+        keyboard.add(
+            InlineKeyboardButton(
+                'Удалить',
+                callback_data=f'{self.model.__name__}_delete_{item.id}'
+            )
+        )
+
+        keyboard.add(
+            InlineKeyboardButton(
+                'Назад',
+                callback_data=f'{self.model.__name__}_get_{item.id}')
+        )
         return keyboard
+
+    async def to_page(self, callback_query: CallbackQuery):
+        page_num = int(callback_query.data.split('_')[-1])
+        keyboard = self.get_page(page_num)
+        await callback_query.message.edit_reply_markup(keyboard)
+
+    async def delete(self, callback_query: CallbackQuery):
+        item_id = int(callback_query.data.split('_')[-1])
+        item = self.db.query(self.model).filter(self.model.id == item_id).first()
+        self.db.delete(item)
+        self.db.commit()
+
+        keyboard = self.get_page()
+        await callback_query.message.answer(f'{self.model.ListMeta.__verbose_name__} #{item_id} удалено')
+        await callback_query.message.edit_text(f'Все {self.model.ListMeta.__verbose_name_plural__}',
+                                               reply_markup=keyboard)
+
+    async def get_item_page_handler(self, callback_query: CallbackQuery):
+        item_id = int(callback_query.data.split('_')[-1])
+        keyboard = self.get_item_page(item_id)
+        text = f'{self.model.ListMeta.__verbose_name__} #{item_id}'
+        await callback_query.message.edit_text(text, reply_markup=keyboard)
+
+    def get_handlers(self):
+        handlers = [
+            (self.to_page, lambda callback_query: callback_query.data.startswith(f'{self.model.__name__}_toPage_')),
+            (self.get_item_page_handler,
+             lambda callback_query: callback_query.data.startswith(f'{self.model.__name__}_get_')),
+            (self.delete, lambda callback_query: callback_query.data.startswith(f'{self.model.__name__}_delete_')),
+        ]
+        return handlers
