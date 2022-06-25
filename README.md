@@ -3,7 +3,7 @@
 ## Looks like
 ![looksLike](images/looksLike.gif)
 ``` python
-chats = [
+items = [
     "".join(random.sample("abcdefgh", 8)) 
     for _ in range(100)
 ]
@@ -17,7 +17,7 @@ buttons = (
         callback_data="back"
     )
 )
-lv = ListView(chats, 2, buttons=buttons)
+lv = ListView(items, 2, buttons=buttons)
 keyboard = lv.get_page()
 lv.register_handlers(dispatcher)
 await bot.send_message(
@@ -30,7 +30,7 @@ await bot.send_message(
 ## Usage
 ``` python
 lv = ListView(
-    items=chats,  # Iterable list of items which should be displayed
+    items=items,  # Iterable list of items which should be displayed
     row_width=2,  # Default: 1. How many items should be displayed in a row
     is_enumerate=True,  # Default: False. Should items be enumerated
     buttons=buttons  # Default: []. list of buttons which should be displayed below, after ListView's buttons
