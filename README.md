@@ -41,3 +41,8 @@ lv.register_handlers(dp)  # Register handlers for ListView's buttons: arrow left
 
 # Then just put keyboard to reply_markup
 ```
+
+<h2 align="center"><b>Contributors</b></h2>
+
+* [**platon-p**](https://github.com/platon-p)
+* [**mrSkyGuy**](https://github.com/mrksyguy)
