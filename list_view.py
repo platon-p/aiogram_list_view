@@ -10,7 +10,7 @@ class ListView:
                   https://github.com/platon-p
 
     Property "lv_unique_id" is using for unique callback_data name. 
-    Callback data which using for ListView will be look like "__ListViewItems{lv_unique_id}" 
+    Callback data which using for ListView will be look like "_ListViewItems{lv_unique_id}" 
     """
     lv_unique_id = 0
 
